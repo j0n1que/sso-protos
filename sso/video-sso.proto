@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package auth;
+
+option go_package = "j0n1que.sso.v1;ssov1";
+
+service Auth{
+    rpc RegisterNewUser (RegisterRequest) returns (RegisterResponse);
+    rpc AuthorizeUser (AutohrizeRequest) returns (AuthorizeResponse);
+    rpc IsAdmin (IsAdminRequest) returns (IsAdminResponse);
+    rpc ChangePassword (ChangePasswordRequest) returns (google.protobuf.Empty);
+    rpc GetAllUsers (google.protobuf.Empty) returns (ListOfUsers);
+}
+
+message RegisterRequest{
+    string login = 1;
+    string password = 2;
+}
+
+message RegisterResponse{
+    int64 user_id = 1;
+}
+
+message AutohrizeRequest{
+    string login = 1;
+    string password = 2;
+    int32 app_id = 3;
+}
+
+message AuthorizeResponse{
+    string token = 1;
+}
+
+message IsAdminRequest{
+    int64 user_id = 1;
+}
+
+message IsAdminResponse{
+    bool is_admin = 1;
+}
+
+message ChangePasswordRequest{
+    int64 user_id = 1;
+    string new_password = 2;
+}
+
+message ListOfUsers{
+    repeated User users = 1;
+}
+
+message User{
+    int64 user_id = 1;
+    string login = 2;
+    string password = 3;
+}
