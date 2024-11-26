@@ -7,11 +7,14 @@ package auth;
 option go_package = "j0n1que.sso.v1;ssov1";
 
 service Auth{
-    rpc RegisterNewUser (RegisterRequest) returns (RegisterResponse);
+    rpc RegisterNewUser (RegisterRequest) returns (google.protobuf.Empty);
     rpc AuthorizeUser (AutohrizeRequest) returns (AuthorizeResponse);
     rpc IsAdmin (IsAdminRequest) returns (IsAdminResponse);
     rpc ChangePassword (ChangePasswordRequest) returns (google.protobuf.Empty);
     rpc GetAllUsers (google.protobuf.Empty) returns (ListOfUsers);
+    rpc MakeAdmin (MakeAdminRequest) returns (google.protobuf.Empty);
+    rpc GetJWT (GetJWTRequest) returns (GetJWTResponse);
+    rpc DeleteJWT (DeleteJWTRequest) returns (google.protobuf.Empty);
 }
 
 message RegisterRequest{
@@ -20,7 +23,7 @@ message RegisterRequest{
 }
 
 message RegisterResponse{
-    int64 user_id = 1;
+    
 }
 
 message AutohrizeRequest{
@@ -53,4 +56,20 @@ message User{
     int64 user_id = 1;
     string login = 2;
     string password = 3;
+}
+
+message MakeAdminRequest{
+    int64 user_id = 1;
+}
+
+message GetJWTRequest{
+    int64 user_id = 1;
+}
+
+message GetJWTResponse{
+    string token = 1;
+}
+
+message DeleteJWTRequest{
+    int64 user_id = 1;
 }

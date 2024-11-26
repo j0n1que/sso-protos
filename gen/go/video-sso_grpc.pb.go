@@ -25,17 +25,23 @@ const (
 	Auth_IsAdmin_FullMethodName         = "/auth.Auth/IsAdmin"
 	Auth_ChangePassword_FullMethodName  = "/auth.Auth/ChangePassword"
 	Auth_GetAllUsers_FullMethodName     = "/auth.Auth/GetAllUsers"
+	Auth_MakeAdmin_FullMethodName       = "/auth.Auth/MakeAdmin"
+	Auth_GetJWT_FullMethodName          = "/auth.Auth/GetJWT"
+	Auth_DeleteJWT_FullMethodName       = "/auth.Auth/DeleteJWT"
 )
 
 // AuthClient is the client API for Auth service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthClient interface {
-	RegisterNewUser(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	RegisterNewUser(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	AuthorizeUser(ctx context.Context, in *AutohrizeRequest, opts ...grpc.CallOption) (*AuthorizeResponse, error)
 	IsAdmin(ctx context.Context, in *IsAdminRequest, opts ...grpc.CallOption) (*IsAdminResponse, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetAllUsers(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListOfUsers, error)
+	MakeAdmin(ctx context.Context, in *MakeAdminRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	GetJWT(ctx context.Context, in *GetJWTRequest, opts ...grpc.CallOption) (*GetJWTResponse, error)
+	DeleteJWT(ctx context.Context, in *DeleteJWTRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type authClient struct {
@@ -46,9 +52,9 @@ func NewAuthClient(cc grpc.ClientConnInterface) AuthClient {
 	return &authClient{cc}
 }
 
-func (c *authClient) RegisterNewUser(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
+func (c *authClient) RegisterNewUser(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RegisterResponse)
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, Auth_RegisterNewUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -96,15 +102,48 @@ func (c *authClient) GetAllUsers(ctx context.Context, in *emptypb.Empty, opts ..
 	return out, nil
 }
 
+func (c *authClient) MakeAdmin(ctx context.Context, in *MakeAdminRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Auth_MakeAdmin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authClient) GetJWT(ctx context.Context, in *GetJWTRequest, opts ...grpc.CallOption) (*GetJWTResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetJWTResponse)
+	err := c.cc.Invoke(ctx, Auth_GetJWT_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authClient) DeleteJWT(ctx context.Context, in *DeleteJWTRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Auth_DeleteJWT_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServer is the server API for Auth service.
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility.
 type AuthServer interface {
-	RegisterNewUser(context.Context, *RegisterRequest) (*RegisterResponse, error)
+	RegisterNewUser(context.Context, *RegisterRequest) (*emptypb.Empty, error)
 	AuthorizeUser(context.Context, *AutohrizeRequest) (*AuthorizeResponse, error)
 	IsAdmin(context.Context, *IsAdminRequest) (*IsAdminResponse, error)
 	ChangePassword(context.Context, *ChangePasswordRequest) (*emptypb.Empty, error)
 	GetAllUsers(context.Context, *emptypb.Empty) (*ListOfUsers, error)
+	MakeAdmin(context.Context, *MakeAdminRequest) (*emptypb.Empty, error)
+	GetJWT(context.Context, *GetJWTRequest) (*GetJWTResponse, error)
+	DeleteJWT(context.Context, *DeleteJWTRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -115,7 +154,7 @@ type AuthServer interface {
 // pointer dereference when methods are called.
 type UnimplementedAuthServer struct{}
 
-func (UnimplementedAuthServer) RegisterNewUser(context.Context, *RegisterRequest) (*RegisterResponse, error) {
+func (UnimplementedAuthServer) RegisterNewUser(context.Context, *RegisterRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterNewUser not implemented")
 }
 func (UnimplementedAuthServer) AuthorizeUser(context.Context, *AutohrizeRequest) (*AuthorizeResponse, error) {
@@ -129,6 +168,15 @@ func (UnimplementedAuthServer) ChangePassword(context.Context, *ChangePasswordRe
 }
 func (UnimplementedAuthServer) GetAllUsers(context.Context, *emptypb.Empty) (*ListOfUsers, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllUsers not implemented")
+}
+func (UnimplementedAuthServer) MakeAdmin(context.Context, *MakeAdminRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MakeAdmin not implemented")
+}
+func (UnimplementedAuthServer) GetJWT(context.Context, *GetJWTRequest) (*GetJWTResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetJWT not implemented")
+}
+func (UnimplementedAuthServer) DeleteJWT(context.Context, *DeleteJWTRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteJWT not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 func (UnimplementedAuthServer) testEmbeddedByValue()              {}
@@ -241,6 +289,60 @@ func _Auth_GetAllUsers_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Auth_MakeAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MakeAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).MakeAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_MakeAdmin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).MakeAdmin(ctx, req.(*MakeAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Auth_GetJWT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetJWTRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).GetJWT(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_GetJWT_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).GetJWT(ctx, req.(*GetJWTRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Auth_DeleteJWT_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteJWTRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).DeleteJWT(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_DeleteJWT_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).DeleteJWT(ctx, req.(*DeleteJWTRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Auth_ServiceDesc is the grpc.ServiceDesc for Auth service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -267,6 +369,18 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllUsers",
 			Handler:    _Auth_GetAllUsers_Handler,
+		},
+		{
+			MethodName: "MakeAdmin",
+			Handler:    _Auth_MakeAdmin_Handler,
+		},
+		{
+			MethodName: "GetJWT",
+			Handler:    _Auth_GetJWT_Handler,
+		},
+		{
+			MethodName: "DeleteJWT",
+			Handler:    _Auth_DeleteJWT_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
