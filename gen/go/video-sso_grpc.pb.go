@@ -20,14 +20,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Auth_RegisterNewUser_FullMethodName = "/auth.Auth/RegisterNewUser"
-	Auth_AuthorizeUser_FullMethodName   = "/auth.Auth/AuthorizeUser"
-	Auth_IsAdmin_FullMethodName         = "/auth.Auth/IsAdmin"
-	Auth_ChangePassword_FullMethodName  = "/auth.Auth/ChangePassword"
-	Auth_GetAllUsers_FullMethodName     = "/auth.Auth/GetAllUsers"
-	Auth_MakeAdmin_FullMethodName       = "/auth.Auth/MakeAdmin"
-	Auth_GetJWT_FullMethodName          = "/auth.Auth/GetJWT"
-	Auth_DeleteJWT_FullMethodName       = "/auth.Auth/DeleteJWT"
+	Auth_RegisterNewUser_FullMethodName   = "/auth.Auth/RegisterNewUser"
+	Auth_AuthorizeUser_FullMethodName     = "/auth.Auth/AuthorizeUser"
+	Auth_IsAdmin_FullMethodName           = "/auth.Auth/IsAdmin"
+	Auth_ChangePassword_FullMethodName    = "/auth.Auth/ChangePassword"
+	Auth_GetAllUsers_FullMethodName       = "/auth.Auth/GetAllUsers"
+	Auth_GetUserByTelegram_FullMethodName = "/auth.Auth/GetUserByTelegram"
+	Auth_MakeAdmin_FullMethodName         = "/auth.Auth/MakeAdmin"
+	Auth_GetJWT_FullMethodName            = "/auth.Auth/GetJWT"
+	Auth_DeleteJWT_FullMethodName         = "/auth.Auth/DeleteJWT"
 )
 
 // AuthClient is the client API for Auth service.
@@ -39,6 +40,7 @@ type AuthClient interface {
 	IsAdmin(ctx context.Context, in *IsAdminRequest, opts ...grpc.CallOption) (*IsAdminResponse, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetAllUsers(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ListOfUsers, error)
+	GetUserByTelegram(ctx context.Context, in *GetUserByTelegramRequest, opts ...grpc.CallOption) (*ListOfUsers, error)
 	MakeAdmin(ctx context.Context, in *MakeAdminRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetJWT(ctx context.Context, in *GetJWTRequest, opts ...grpc.CallOption) (*GetJWTResponse, error)
 	DeleteJWT(ctx context.Context, in *DeleteJWTRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -102,6 +104,16 @@ func (c *authClient) GetAllUsers(ctx context.Context, in *emptypb.Empty, opts ..
 	return out, nil
 }
 
+func (c *authClient) GetUserByTelegram(ctx context.Context, in *GetUserByTelegramRequest, opts ...grpc.CallOption) (*ListOfUsers, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListOfUsers)
+	err := c.cc.Invoke(ctx, Auth_GetUserByTelegram_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authClient) MakeAdmin(ctx context.Context, in *MakeAdminRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
@@ -141,6 +153,7 @@ type AuthServer interface {
 	IsAdmin(context.Context, *IsAdminRequest) (*IsAdminResponse, error)
 	ChangePassword(context.Context, *ChangePasswordRequest) (*emptypb.Empty, error)
 	GetAllUsers(context.Context, *emptypb.Empty) (*ListOfUsers, error)
+	GetUserByTelegram(context.Context, *GetUserByTelegramRequest) (*ListOfUsers, error)
 	MakeAdmin(context.Context, *MakeAdminRequest) (*emptypb.Empty, error)
 	GetJWT(context.Context, *GetJWTRequest) (*GetJWTResponse, error)
 	DeleteJWT(context.Context, *DeleteJWTRequest) (*emptypb.Empty, error)
@@ -168,6 +181,9 @@ func (UnimplementedAuthServer) ChangePassword(context.Context, *ChangePasswordRe
 }
 func (UnimplementedAuthServer) GetAllUsers(context.Context, *emptypb.Empty) (*ListOfUsers, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllUsers not implemented")
+}
+func (UnimplementedAuthServer) GetUserByTelegram(context.Context, *GetUserByTelegramRequest) (*ListOfUsers, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByTelegram not implemented")
 }
 func (UnimplementedAuthServer) MakeAdmin(context.Context, *MakeAdminRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MakeAdmin not implemented")
@@ -289,6 +305,24 @@ func _Auth_GetAllUsers_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Auth_GetUserByTelegram_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserByTelegramRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).GetUserByTelegram(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_GetUserByTelegram_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).GetUserByTelegram(ctx, req.(*GetUserByTelegramRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Auth_MakeAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MakeAdminRequest)
 	if err := dec(in); err != nil {
@@ -369,6 +403,10 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAllUsers",
 			Handler:    _Auth_GetAllUsers_Handler,
+		},
+		{
+			MethodName: "GetUserByTelegram",
+			Handler:    _Auth_GetUserByTelegram_Handler,
 		},
 		{
 			MethodName: "MakeAdmin",

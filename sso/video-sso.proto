@@ -12,6 +12,7 @@ service Auth{
     rpc IsAdmin (IsAdminRequest) returns (IsAdminResponse);
     rpc ChangePassword (ChangePasswordRequest) returns (google.protobuf.Empty);
     rpc GetAllUsers (google.protobuf.Empty) returns (ListOfUsers);
+    rpc GetUserByTelegram (GetUserByTelegramRequest) returns (ListOfUsers);
     rpc MakeAdmin (MakeAdminRequest) returns (google.protobuf.Empty);
     rpc GetJWT (GetJWTRequest) returns (GetJWTResponse);
     rpc DeleteJWT (DeleteJWTRequest) returns (google.protobuf.Empty);
@@ -20,6 +21,7 @@ service Auth{
 message RegisterRequest{
     string login = 1;
     string password = 2;
+    string telegram_login = 3;
 }
 
 message AutohrizeRequest{
@@ -53,6 +55,11 @@ message User{
     string login = 2;
     string password = 3;
     bool is_admin = 4;
+    string telegram_login = 5;
+}
+
+message GetUserByTelegramRequest{
+    string telegram_login = 1;
 }
 
 message MakeAdminRequest{
